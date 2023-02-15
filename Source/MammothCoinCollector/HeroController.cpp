@@ -4,6 +4,7 @@
 #include "HeroController.h"
 #include "CoinController.h"
 #include "Components/BoxComponent.h"
+#include "CoinGameMode.h"
 
 // Sets default values
 AHeroController::AHeroController()
@@ -61,6 +62,8 @@ void AHeroController::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor
 	if (OtherActor->IsA(ACoinController::StaticClass()))
 	{
 		OtherActor->Destroy();
+
+		((ACoinGameMode*)GetWorld()->GetAuthGameMode())->OnCoinCollected();
 	}
 }
 
