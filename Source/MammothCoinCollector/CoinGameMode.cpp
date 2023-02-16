@@ -26,6 +26,7 @@ void ACoinGameMode::OnCoinCollected()
 	if (CoinsToCollect == 0)
 	{
 		((UGameWidget*)CurrentWidget)->OnGameOver();
+		UGameplayStatics::SetGamePaused(GetWorld(), true);
 	}
 }
 

@@ -5,6 +5,8 @@
 #include "CoinController.h"
 #include "Components/BoxComponent.h"
 #include "CoinGameMode.h"
+#include "Kismet/GameplayStatics.h"
+#include "BulletController.h"
 
 // Sets default values
 AHeroController::AHeroController()
@@ -15,6 +17,8 @@ AHeroController::AHeroController()
 	CollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Root"));
 	CollisionBox->SetGenerateOverlapEvents(true);
 	CollisionBox->OnComponentBeginOverlap.AddDynamic(this, &AHeroController::OnOverlap);
+
+	RootComponent = CollisionBox;
 
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
 }
@@ -45,6 +49,9 @@ void AHeroController::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 
 	InputComponent->BindAxis("MoveX", this, &AHeroController::MoveHorizontally);
 	InputComponent->BindAxis("MoveY", this, &AHeroController::MoveVertically);
+
+	InputComponent->BindAction("Restart", IE_Pressed, this, &AHeroController::OnRestart).bExecuteWhenPaused = true;
+	InputComponent->BindAction("Shoot", IE_Pressed, this, &AHeroController::OnShoot);
 }
 
 void AHeroController::MoveHorizontally(float AxisValue)
@@ -55,6 +62,22 @@ void AHeroController::MoveHorizontally(float AxisValue)
 void AHeroController::MoveVertically(float AxisValue)
 {
 	CurrentVelocity.Y = FMath::Clamp(AxisValue, -1.0f, 1.0f) * 100.0f;
+}
+
+void AHeroController::OnShoot()
+{
+	UWorld* World = GetWorld();
+
+	if (World)
+	{
+		FVector Location = GetActorLocation();
+		World->SpawnActor<ABulletController>(BulletBlueprint, Location, FRotator::ZeroRotator);
+	}
+}
+
+void AHeroController::OnRestart()
+{
+	UGameplayStatics::OpenLevel(this, FName(*GetWorld()->GetName()), false);
 }
 
 void AHeroController::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)

@@ -32,10 +32,15 @@ public:
 	UPROPERTY(EditAnywhere)
 		float Speed = 10.0f;
 
+	UPROPERTY(EditAnywhere, Category = "Spawning")
+		TSubclassOf<class ABulletController>BulletBlueprint;
+
 	FVector CurrentVelocity;
 
 	void MoveHorizontally(float AxisValue);
 	void MoveVertically(float AxisValue);
+	void OnShoot();
+	void OnRestart();
 
 	UFUNCTION()
 		void OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
