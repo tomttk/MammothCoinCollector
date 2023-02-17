@@ -7,6 +7,7 @@
 #include "CoinGameMode.h"
 #include "Kismet/GameplayStatics.h"
 #include "BulletController.h"
+#include "EnemyController.h"
 
 // Sets default values
 AHeroController::AHeroController()
@@ -87,6 +88,15 @@ void AHeroController::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor
 		OtherActor->Destroy();
 
 		((ACoinGameMode*)GetWorld()->GetAuthGameMode())->OnCoinCollected();
+	}
+
+	if (OtherActor->IsA(AEnemyController::StaticClass()))
+	{
+		Died = true;
+
+		this->SetActorHiddenInGame(true);
+
+		UGameplayStatics::SetGamePaused(GetWorld(), true);
 	}
 }
 
